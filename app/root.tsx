@@ -5,10 +5,14 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
+
+import Navigation from "./common/components/navigation";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Settings } from "luxon";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,8 +28,10 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  Settings.defaultLocale = "en";
+  Settings.defaultZone = "Asia/Seoul";
   return (
-    <html lang="en">
+    <html lang="en" className="">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <main>{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -42,7 +48,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const { pathname } = useLocation();
+  return (
+    <div className={pathname.includes("/auth/") ? "" : "px-5 lg:px-20 py-28"}>
+      {!pathname.includes("/auth") && (
+        <Navigation
+          isLoggedIn={false}
+          hasNotification={false}
+          hasMessages={false}
+        />
+      )}
+      <Outlet />
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
