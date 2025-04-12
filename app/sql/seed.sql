@@ -12,7 +12,12 @@ INSERT INTO "products" ("name", "tagline", "description", "how_it_works", "icon"
 ('DesignHub', 'All-in-one platform for designers', 'Manage everything from design inspiration to collaboration in one place.', 'A cloud-based design management system that allows the entire team to share and collaborate on design assets.', 'https://example.com/designhub.png', 'https://designhub.io', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5),
 ('SmartTracker', 'Personal finance management app', 'Effectively manage your income and expenses to achieve your financial goals.', 'Uses AI algorithms to analyze user spending patterns and provide personalized financial advice.', 'https://example.com/smarttracker.png', 'https://smarttracker.app', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 2),
 ('CloudSpace', 'Secure cloud storage solution', 'Store your data securely with encrypted cloud storage.', 'Uses end-to-end encryption technology to securely protect user data.', 'https://example.com/cloudspace.png', 'https://cloudspace.io', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 1),
-('AI Writer', 'AI-based writing assistant', 'Write better content faster.', 'Utilizes GPT-based models to generate content for various styles and purposes.', 'https://example.com/aiwriter.png', 'https://aiwriter.tech', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 3);
+('AI Writer', 'AI-based writing assistant', 'Write better content faster.', 'Utilizes GPT-based models to generate content for various styles and purposes.', 'https://example.com/aiwriter.png', 'https://aiwriter.tech', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 3),
+('TaskFlow', 'Work automation platform', 'Automate repetitive tasks to increase productivity.', 'An AI-powered workflow automation system that efficiently handles repetitive tasks.', 'https://example.com/taskflow.png', 'https://taskflow.dev', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 1),
+('HealthTrack', 'Health management app', 'All-in-one app for daily health management.', 'Tracks and analyzes activity, sleep, and diet to provide personalized health management solutions.', 'https://example.com/healthtrack.png', 'https://healthtrack.app', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 2),
+('DevOpsHub', 'Development operations automation tool', 'Seamlessly integrate development and operations processes.', 'Automates the entire development lifecycle from code deployment to infrastructure management.', 'https://example.com/devopshub.png', 'https://devopshub.io', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 4),
+('ColorPalette', 'Color tool for designers', 'Easily find perfect color combinations.', 'Uses AI technology to suggest optimal color palettes that match your brand identity.', 'https://example.com/colorpalette.png', 'https://colorpalette.design', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5),
+('TranslateNow', 'Real-time translation service', 'Translate all languages in real-time.', 'Provides accurate and natural translation results using deep learning-based language models.', 'https://example.com/translatenow.png', 'https://translatenow.ai', '2829c905-1254-4b8f-91eb-97cf99e86dcd', 3);
 
 -- Review table seed data
 INSERT INTO "reviews" ("product_id", "profile_id", "rating", "review") VALUES
@@ -20,7 +25,12 @@ INSERT INTO "reviews" ("product_id", "profile_id", "rating", "review") VALUES
 (1, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 4, 'Easy to use and provides accurate suggestions. Some improvements needed, but overall I''m satisfied.'),
 (2, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'DesignHub has greatly improved our team''s design process. Collaboration has become much easier!'),
 (3, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 4, 'Very helpful for financial management. The interface is intuitive and easy to use.'),
-(4, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'Excellent in both security and usability. I keep all my data safely stored here.');
+(4, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'Excellent in both security and usability. I keep all my data safely stored here.'),
+(6, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'TaskFlow has greatly improved our team''s work efficiency. Highly recommended!'),
+(7, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 4, 'Really helpful for health management. The interface is intuitive and easy to use.'),
+(8, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'Development process has become much smoother. Team productivity increased by over 50%.'),
+(9, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 4, 'Design work has become much easier. It would be perfect with a few more features.'),
+(10, '2829c905-1254-4b8f-91eb-97cf99e86dcd', 5, 'The translation quality is amazing. Communication in international projects has become much smoother.');
 
 -- Product upvote table seed data (composite primary key)
 INSERT INTO "product_upvotes" ("product_id", "profile_id") VALUES
@@ -44,7 +54,10 @@ INSERT INTO "ideas" ("idea", "views", "claimed_by") VALUES
 ('Cryptocurrency Education Platform - Blockchain and cryptocurrency education for beginners', 120, NULL),
 ('Automated Code Review Tool - AI-powered service for improving code quality', 200, NULL),
 ('Community Platform for Digital Nomads - Networking service for remote workers and digital nomads', 180, NULL),
-('AR-based Interior Simulation App - Service for virtually placing furniture and interior items', 250, '2829c905-1254-4b8f-91eb-97cf99e86dcd');
+('AR-based Interior Simulation App - Service for virtually placing furniture and interior items', 250, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
+('AI-based Music Composition Tool - Service for creating original music tailored to user styles', 320, NULL),
+('Real-time Translation Earphones - Smart earphones that translate multiple languages in real-time', 280, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
+('Sustainable Fashion Marketplace - Platform for eco-friendly clothing trade and recycling', 175, NULL);
 
 -- Idea likes table seed data (composite primary key)
 INSERT INTO "gpt_ideas_likes" ("gpt_idea_id", "profile_id") VALUES
@@ -66,7 +79,10 @@ INSERT INTO "posts" ("title", "content", "topic_id", "profile_id") VALUES
 ('Latest Trends in UI Design', 'Exploring UI design trends in 2023 and discussing how to provide effective user experiences...', 2, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
 ('Marketing Strategies for SaaS Products', 'Introducing key strategies and case studies for successful marketing of SaaS products...', 3, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
 ('Starting a Startup Without Bootstrap', 'A practical guide to starting and growing a startup without investment...', 4, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
-('The Impact of AI on Software Development', 'Analyzing how AI technologies are changing software development processes and the role of developers...', 5, '2829c905-1254-4b8f-91eb-97cf99e86dcd');
+('The Impact of AI on Software Development', 'Analyzing how AI technologies are changing software development processes and the role of developers...', 5, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
+('Analysis of Korean Startup Ecosystem', 'In-depth analysis of the Korean startup environment and investment ecosystem with future prospects...', 4, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
+('Localization Strategies for Mobile App Design', 'Effective methods and case studies for localizing mobile app designs for different cultures...', 2, '2829c905-1254-4b8f-91eb-97cf99e86dcd'),
+('Ethical Considerations in AI Development', 'Discussion of ethical issues and solutions to be considered in artificial intelligence development...', 5, '2829c905-1254-4b8f-91eb-97cf99e86dcd');
 
 -- Post reply table seed data
 INSERT INTO "post_replies" ("post_id", "profile_id", "reply") VALUES
@@ -128,4 +144,8 @@ INSERT INTO "jobs" (
 ('Backend Developer', 'Developing scalable server systems', 'API design and implementation, database optimization', '2+ years Node.js experience, database experience', 'Stock options, professional development support', 'Node.js, PostgreSQL, Docker', 'CloudWorks', 'https://example.com/cloudworks.png', 'Busan', 'https://example.com/apply', 'full-time', 'hybrid', '$50,000 - $70,000'),
 ('UX/UI Designer', 'Developing user-centered designs', 'Creating wireframes, user testing, managing design systems', '2+ years UX/UI experience, portfolio required', 'Creative work environment, latest design tools provided', 'Figma, Adobe XD, Sketch', 'DesignLab', 'https://example.com/designlab.png', 'Incheon', 'https://example.com/apply', 'full-time', 'in-person', '$50,000 - $70,000'),
 ('Data Scientist', 'Supporting data-driven decision making', 'Data analysis, model development, providing insights', 'Masters in Statistics or Computer Science, Python experience', 'Research conference participation support, latest hardware provided', 'Python, R, TensorFlow, SQL', 'DataTech', 'https://example.com/datatech.png', 'Daejeon', 'https://example.com/apply', 'part-time', 'remote', '$100,000 - $120,000'),
-('Mobile App Developer', 'Native mobile app development', 'Android/iOS app development and maintenance', '2+ years mobile app development experience', 'Flexible vacation policy, performance bonuses', 'Swift, Kotlin, Flutter', 'AppStudio', 'https://example.com/appstudio.png', 'Gwangju', 'https://example.com/apply', 'full-time', 'hybrid', '$70,000 - $100,000'); 
+('Mobile App Developer', 'Native mobile app development', 'Android/iOS app development and maintenance', '2+ years mobile app development experience', 'Flexible vacation policy, performance bonuses', 'Swift, Kotlin, Flutter', 'AppStudio', 'https://example.com/appstudio.png', 'Gwangju', 'https://example.com/apply', 'full-time', 'hybrid', '$70,000 - $100,000'),
+('AI Research Engineer', 'Research and development of cutting-edge AI models', 'AI algorithm research, model development and optimization, paper writing', 'Masters degree or higher, 2+ years experience in machine learning', 'Research funding, paper presentation opportunities, latest hardware provided', 'Python, PyTorch, TensorFlow, NLP', 'AI Research Labs', 'https://example.com/airesearchlabs.png', 'Seoul', 'https://example.com/apply', 'full-time', 'hybrid', '$70,000 - $100,000'),
+('Blockchain Developer', 'Developing distributed applications', 'Smart contract development, blockchain infrastructure setup', '1+ years blockchain development experience, Solidity programming experience', 'Coin reward program, global conference participation support', 'Solidity, Ethereum, Web3.js, Smart Contracts', 'BlockTech', 'https://example.com/blocktech.png', 'Seongnam', 'https://example.com/apply', 'full-time', 'remote', '$60,000 - $90,000'),
+('Product Manager', 'Developing user-centered product strategies', 'Product roadmap development, user feedback analysis, feature prioritization', '3+ years product management experience, understanding of agile methodologies', 'Stock options, leadership training programs, flexible working hours', 'Product Strategy, Agile, Jira, User Stories', 'ProductFirst', 'https://example.com/productfirst.png', 'Busan', 'https://example.com/apply', 'full-time', 'in-person', '$60,000 - $80,000'),
+('DevOps Engineer', 'Cloud infrastructure management and optimization', 'CI/CD pipeline construction, cloud infrastructure management, monitoring system implementation', '2+ years AWS/GCP experience, container technology experience', 'Remote work possible, self-development funds, latest equipment provided', 'Docker, Kubernetes, AWS, CI/CD, Terraform', 'CloudOps', 'https://example.com/cloudops.png', 'Seoul', 'https://example.com/apply', 'full-time', 'remote', '$70,000 - $90,000'); 

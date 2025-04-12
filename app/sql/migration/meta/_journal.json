@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1744273067187,
-      "tag": "0000_solid_alex_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1744280321152,
-      "tag": "0001_polite_raider",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1744284421990,
-      "tag": "0002_busy_squirrel_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1744287668254,
-      "tag": "0003_parched_black_crow",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1744288472301,
-      "tag": "0004_clever_terror",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1744289066899,
-      "tag": "0005_goofy_chameleon",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1744329615079,
-      "tag": "0006_magenta_preak",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1744359109852,
-      "tag": "0007_rapid_spyke",
+      "when": 1744447067005,
+      "tag": "0000_nasty_tombstone",
       "breakpoints": true
     }
   ]

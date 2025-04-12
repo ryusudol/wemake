@@ -11,8 +11,8 @@ export default function ProfileProductsPage() {
       {Array.from({ length: 5 }).map((_, idx) => (
         <ProductCard
           key={`productId: ${idx}`}
-          id={`productId: ${idx}`}
-          title="Product Name"
+          productId={idx}
+          productName="Product Name"
           description="Product description"
           commentCount={12}
           viewCount={120}

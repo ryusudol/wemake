@@ -17,7 +17,6 @@ interface TeamCardProps {
   id: string;
   leaderUsername: string;
   leaderAvatarUrl: string;
-  leaderAvatarFallback: string;
   positions: string[];
   projectDescription: string;
 }
@@ -26,7 +25,6 @@ export function TeamCard({
   id,
   leaderUsername,
   leaderAvatarUrl,
-  leaderAvatarFallback,
   positions,
   projectDescription,
 }: TeamCardProps) {
@@ -42,7 +40,9 @@ export function TeamCard({
               <span>@{leaderUsername}</span>
               <Avatar className="size-5">
                 <AvatarImage src={leaderAvatarUrl} />
-                <AvatarFallback>{leaderAvatarFallback}</AvatarFallback>
+                <AvatarFallback>
+                  {leaderUsername[0].toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </Badge>
             <span>is looking for</span>

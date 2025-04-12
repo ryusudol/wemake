@@ -6,38 +6,31 @@ import { IdeaCard } from "~/features/ideas/components/idea-card";
 import { JobCard } from "~/features/jobs/components/job-card";
 import { TeamCard } from "~/features/teams/components/team-card";
 import { Button } from "../components/ui/button";
+import { getProductsByDateRange } from "~/features/products/queries";
+import { DateTime } from "luxon";
+import type { Route } from "./+types/home-page";
+import { getPosts } from "~/features/community/queries";
+import { getGptIdeas } from "~/features/ideas/queries";
+import { getJobs } from "~/features/jobs/queries";
 
 export const meta: MetaFunction = () => [
   { title: "Home | wemake" },
   { name: "description", content: "Welcome to wemake" },
 ];
 
-export default function HomePage() {
-  const product = {
-    id: "productId",
-    title: "Product Title",
-    description: "Product Description",
-    commentCount: 12,
-    viewCount: 12,
-    upvoteCount: 120,
-  };
-  const discussion = {
-    postId: 1,
-    authorName: "Suhyeon",
-    authorAvatarSrc: "https://github.com/apple.png",
-    authorAvatarFallback: "R",
-    title: "What is the best productivity tool?",
-    category: "Productivity",
-    timestamp: "12 hours ago",
-  };
-  const idea = {
-    id: "ideaId",
-    title:
-      "A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to mange the business.",
-    viewCount: 123,
-    timestamp: "12 hours ago",
-    likeCount: 12,
-  };
+export const loader = async () => {
+  const products = await getProductsByDateRange({
+    startDate: DateTime.now().startOf("day"),
+    endDate: DateTime.now().endOf("day"),
+    limit: 0,
+  });
+  const posts = await getPosts({ limit: 8, sorting: "newest" });
+  const ideas = await getGptIdeas({ limit: 5 });
+  const jobs = await getJobs({ limit: 11 });
+  return { products, posts, ideas, jobs };
+};
+
+export default function HomePage({ loaderData }: Route.ComponentProps) {
   const job = {
     id: "jobId",
     company: "Tesla",
@@ -59,8 +52,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="px-20 space-y-40">
-      <div className="grid grid-cols-3 gap-4">
+    <div className="px-5 lg:px-20 space-y-40">
+      <div className="grid lg:text-2xl grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
             Today's Products
@@ -72,19 +65,19 @@ export default function HomePage() {
             <Link to="/products/leaderboards">Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, idx) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={`productId: ${idx}`}
-            id={product.id}
-            title={product.title}
+            key={product.product_id}
+            productId={product.product_id}
+            productName={product.name}
             description={product.description}
-            commentCount={product.commentCount}
-            viewCount={product.viewCount}
-            upvoteCount={product.upvoteCount}
+            reviewCount={product.reviews}
+            viewCount={product.views}
+            upvoteCount={product.upvotes}
           />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
             Latest Discussions
@@ -96,19 +89,20 @@ export default function HomePage() {
             <Link to="/community">Explore all discussions &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 10 }).map((_, idx) => (
+        {loaderData.posts.map((post) => (
           <PostCard
-            key={`postId-${idx}`}
-            postId={discussion.postId}
-            authorAvatarUrl={discussion.authorAvatarSrc}
-            title={discussion.title}
-            authorName={discussion.authorName}
-            category={discussion.category}
-            postedAt={discussion.timestamp}
+            key={post.post_id}
+            postId={post.post_id}
+            authorAvatarUrl={post.author_avatar}
+            title={post.title}
+            authorName={post.author}
+            category={post.topic}
+            postedAt={post.created_at}
+            votesCount={post.upvotes}
           />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
             IdeasGPT
@@ -120,19 +114,19 @@ export default function HomePage() {
             <Link to="/ideas">Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 5 }).map((_, idx) => (
+        {loaderData.ideas.map((idea) => (
           <IdeaCard
-            key={`ideaId-${idx}`}
-            id={idea.id}
-            title={idea.title}
-            viewCount={idea.viewCount}
-            postedAt={idea.timestamp}
-            likesCount={idea.likeCount}
-            claimed={idx % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewCount={idea.views}
+            postedAt={idea.created_at}
+            likesCount={idea.likes}
+            claimed={idea.is_claimed}
           />
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
             Latest Jobs
@@ -144,22 +138,22 @@ export default function HomePage() {
             <Link to="/jobs">Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, idx) => (
+        {loaderData.jobs.map((job) => (
           <JobCard
-            key={`jobId-${idx}`}
-            id={job.id}
-            company={job.company}
-            companyLogoUrl={job.companyLogoUrl}
-            companyHq={job.companyHq}
-            title={job.title}
-            postedAt={job.postedAt}
-            employmentType={job.employmentType}
-            positionLocation={job.positionLocation}
-            salary={job.salary}
+            key={job.job_id}
+            id={job.job_id}
+            company={job.company_name}
+            companyLogoUrl={job.company_logo_url}
+            companyHq={job.company_location}
+            title={job.position}
+            postedAt={job.created_at}
+            employmentType={job.job_type}
+            positionLocation={job.location_type}
+            salary={job.salary_range}
           />
         ))}
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
             Find a team mate
@@ -168,7 +162,9 @@ export default function HomePage() {
             Join a team looking for a new member.
           </p>
           <Button variant="link" asChild className="text-lg p-0">
-            <Link to="/teams">Explore all teams &rarr;</Link>
+            <Link to="/teams" prefetch="viewport">
+              Explore all teams &rarr;
+            </Link>
           </Button>
         </div>
         {Array.from({ length: 7 }).map((_, idx) => (
@@ -177,7 +173,6 @@ export default function HomePage() {
             id={team.id}
             leaderUsername={team.leaderUsername}
             leaderAvatarUrl={team.leaderAvatarUrl}
-            leaderAvatarFallback={team.leaderAvatarFallback}
             positions={team.positions}
             projectDescription={team.projectDescription}
           />

@@ -48,8 +48,8 @@ export default function SearchPage() {
         {Array.from({ length: 11 }).map((_, idx) => (
           <ProductCard
             key={`productId: ${idx}`}
-            id={`${idx}`}
-            title="Product Name"
+            productId={idx}
+            productName="Product Name"
             description="Product Description"
             commentCount={12}
             viewCount={12}
