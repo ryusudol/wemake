@@ -1,17 +1,28 @@
 import { IdeaCard } from "~/features/ideas/components/idea-card";
+import { getClaimedIdeas } from "~/features/ideas/queries";
+import type { Route } from "./+types/dashboard-ideas-page";
+import { makeSSRClient } from "~/supa-client";
 
-export default function DashboardIdeasPage() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const ideas = await getClaimedIdeas(client, { claimedBy: "" });
+  return { ideas };
+};
+
+export default function DashboardIdeasPage({
+  loaderData,
+}: Route.ComponentProps) {
   return (
     <div className="space-y-10 h-full">
       <h1 className="text-2xl font-semibold mb-6">Claimed Ideas</h1>
       <div className="grid grid-cols-4 gap-6">
-        {Array.from({ length: 5 }).map((_, idx) => (
+        {loaderData.ideas.map((idea) => (
           <IdeaCard
-            key={`ideaId-${idx}`}
-            id={`ideaId-${idx}`}
-            title="A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to mange the business."
-            viewCount={123}
-            postedAt="12 hours ago"
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewCount={idea.views}
+            postedAt={idea.created_at}
             likesCount={12}
           />
         ))}

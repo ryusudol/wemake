@@ -8,13 +8,24 @@ import {
 } from "~/common/components/ui/avatar";
 import { useState } from "react";
 import { Textarea } from "~/common/components/ui/textarea";
+import { DateTime } from "luxon";
 
 interface ReplyProps {
   username: string;
-  avatarUrl?: string;
+  avatarUrl: string | null;
   createdAt: string;
   content: string;
   topLevel: boolean;
+  replies?: {
+    post_reply_id: number;
+    reply: string;
+    created_at: string;
+    user: {
+      name: string;
+      username: string;
+      avatar: string | null;
+    };
+  }[];
 }
 
 export function Reply({
@@ -23,6 +34,7 @@ export function Reply({
   createdAt,
   content,
   topLevel,
+  replies,
 }: ReplyProps) {
   const [replying, setReplying] = useState(false);
   const toggleReplying = () => setReplying((prev) => !prev);
@@ -39,7 +51,9 @@ export function Reply({
               <h4 className="font-medium">{username}</h4>
             </Link>
             <DotIcon className="size-5" />
-            <span className="text-xs text-muted-foreground">{createdAt}</span>
+            <span className="text-xs text-muted-foreground">
+              {DateTime.fromISO(createdAt).toRelative()}
+            </span>
           </div>
           <p className="text-muted-foreground">{content}</p>
           <Button variant="ghost" className="self-end" onClick={toggleReplying}>
@@ -64,15 +78,17 @@ export function Reply({
           </div>
         </Form>
       )}
-      {topLevel && (
+      {topLevel && replies && (
         <div className="pl-20 w-full">
-          <Reply
-            username="Suhyeon"
-            avatarUrl="https://github.com/ryusudol.png"
-            createdAt="12 hours ago"
-            content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
-            topLevel={false}
-          />
+          {replies.map((reply) => (
+            <Reply
+              username={reply.user.username}
+              avatarUrl={reply.user.avatar}
+              createdAt={reply.created_at}
+              content={reply.reply}
+              topLevel={false}
+            />
+          ))}
         </div>
       )}
     </div>

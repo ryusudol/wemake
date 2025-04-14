@@ -29,9 +29,11 @@ export const teams = pgTable(
     product_stage: productStages().notNull(),
     roles: text().notNull(),
     product_description: text().notNull(),
-    team_leader_id: uuid().references(() => profiles.profile_id, {
-      onDelete: "cascade",
-    }),
+    team_leader_id: uuid()
+      .references(() => profiles.profile_id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
   },

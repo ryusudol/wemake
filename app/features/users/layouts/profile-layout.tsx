@@ -1,4 +1,4 @@
-import { Form, Link, NavLink, Outlet } from "react-router";
+import { data, Form, Link, NavLink, Outlet } from "react-router";
 import {
   Avatar,
   AvatarFallback,
@@ -16,18 +16,42 @@ import {
 } from "~/common/components/ui/dialog";
 import { Textarea } from "~/common/components/ui/textarea";
 import { cn } from "~/lib/utils";
+import type { Route } from "./+types/profile-layout";
+import { z } from "zod";
+import { getUserProfile } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
-export default function ProfileLayout() {
+const paramsSchema = z.object({
+  username: z.string(),
+});
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data(
+      { error_code: "invalid_username", error_message: "Invalid username" },
+      { status: 400 }
+    );
+  }
+  const { client } = makeSSRClient(request);
+  const user = await getUserProfile(client, { username: parsedData.username });
+  return { user };
+};
+
+export default function ProfileLayout({ loaderData }: Route.ComponentProps) {
+  const user = loaderData.user;
   return (
     <div className="space-y-10">
       <div className="flex items-center gap-4">
         <Avatar className="size-40">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>S</AvatarFallback>
+          {user.avatar ? <AvatarImage src={user.avatar} /> : null}
+          <AvatarFallback className="text-2xl">
+            {user.name[0].toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         <div className="space-y-5">
           <div className="flex gap-2">
-            <h1 className="text-2xl font-semibold">Suhyeon Yu</h1>
+            <h1 className="text-2xl font-semibold">{user.name}</h1>
             <Button variant="outline" asChild>
               <Link to="/my/settings">Edit profile</Link>
             </Button>
@@ -42,7 +66,7 @@ export default function ProfileLayout() {
                 </DialogHeader>
                 <DialogDescription className="space-y-4">
                   <span className="text-sm text-muted-foreground block">
-                    Send a message to Suhyeon Yu
+                    Send a message to {user.name}
                   </span>
                   <Form className="space-y-4">
                     <Textarea
@@ -57,8 +81,10 @@ export default function ProfileLayout() {
             </Dialog>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">@ryusudol</span>
-            <Badge variant="secondary">Product Designer</Badge>
+            <span className="text-sm text-muted-foreground">
+              {user.username}
+            </span>
+            <Badge variant="secondary">{user.role}</Badge>
             <Badge variant="secondary">100 followers</Badge>
             <Badge variant="secondary">100 following</Badge>
           </div>
@@ -66,9 +92,9 @@ export default function ProfileLayout() {
       </div>
       <div className="flex gap-5">
         {[
-          { label: "About", to: "/users/username" },
-          { label: "Products", to: "/users/username/products" },
-          { label: "Posts", to: "/users/username/posts" },
+          { label: "About", to: `/users/${user.username}` },
+          { label: "Products", to: `/users/${user.username}/products` },
+          { label: "Posts", to: `/users/${user.username}/posts` },
         ].map((item, idx) => (
           <NavLink
             end
@@ -86,7 +112,7 @@ export default function ProfileLayout() {
         ))}
       </div>
       <div className="max-w-screen-md">
-        <Outlet />
+        <Outlet context={{ headline: user.headline, bio: user.bio }} />
       </div>
     </div>
   );

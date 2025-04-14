@@ -12,45 +12,29 @@ import type { Route } from "./+types/home-page";
 import { getPosts } from "~/features/community/queries";
 import { getGptIdeas } from "~/features/ideas/queries";
 import { getJobs } from "~/features/jobs/queries";
+import { getTeams } from "~/features/teams/queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: MetaFunction = () => [
   { title: "Home | wemake" },
   { name: "description", content: "Welcome to wemake" },
 ];
 
-export const loader = async () => {
-  const products = await getProductsByDateRange({
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const products = await getProductsByDateRange(client, {
     startDate: DateTime.now().startOf("day"),
     endDate: DateTime.now().endOf("day"),
     limit: 0,
   });
-  const posts = await getPosts({ limit: 8, sorting: "newest" });
-  const ideas = await getGptIdeas({ limit: 5 });
-  const jobs = await getJobs({ limit: 11 });
-  return { products, posts, ideas, jobs };
+  const posts = await getPosts(client, { limit: 8, sorting: "newest" });
+  const ideas = await getGptIdeas(client, { limit: 5 });
+  const jobs = await getJobs(client, { limit: 11 });
+  const teams = await getTeams(client, { limit: 7 });
+  return { products, posts, ideas, jobs, teams };
 };
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
-  const job = {
-    id: "jobId",
-    company: "Tesla",
-    companyLogoUrl: "https://github.com/facebook.png",
-    companyHq: "San Francisco, CA",
-    postedAt: "12 hours ago",
-    title: "Software Engineer",
-    employmentType: "Full-time",
-    positionLocation: "Remote",
-    salary: "$100,000 - $120,000",
-  };
-  const team = {
-    id: "teamId",
-    leaderUsername: "ryusudol",
-    leaderAvatarUrl: "https://github.com/ryusudol.png",
-    leaderAvatarFallback: "R",
-    positions: ["React Developer", "Backend Developer", "Product Manager"],
-    projectDescription: "a new social media platform",
-  };
-
   return (
     <div className="px-5 lg:px-20 space-y-40">
       <div className="grid lg:text-2xl grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -70,7 +54,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             key={product.product_id}
             productId={product.product_id}
             productName={product.name}
-            description={product.description}
+            description={product.tagline}
             reviewCount={product.reviews}
             viewCount={product.views}
             upvoteCount={product.upvotes}
@@ -167,14 +151,14 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             </Link>
           </Button>
         </div>
-        {Array.from({ length: 7 }).map((_, idx) => (
+        {loaderData.teams.map((team) => (
           <TeamCard
-            key={`teamId-${idx}`}
-            id={team.id}
-            leaderUsername={team.leaderUsername}
-            leaderAvatarUrl={team.leaderAvatarUrl}
-            positions={team.positions}
-            projectDescription={team.projectDescription}
+            key={team.team_id}
+            id={team.team_id}
+            leaderUsername={team.team_leader.username}
+            leaderAvatarUrl={team.team_leader.avatar}
+            positions={team.roles.split(",")}
+            projectDescription={team.product_description}
           />
         ))}
       </div>

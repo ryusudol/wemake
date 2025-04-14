@@ -1,6 +1,10 @@
-import client from "~/supa-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { type Database } from "~/supa-client";
 
-export const getGptIdeas = async ({ limit }: { limit: number }) => {
+export const getGptIdeas = async (
+  client: SupabaseClient<Database>,
+  { limit }: { limit: number }
+) => {
   const { data, error } = await client
     .from("gpt_ideas_view")
     .select("*")
@@ -9,12 +13,27 @@ export const getGptIdeas = async ({ limit }: { limit: number }) => {
   return data;
 };
 
-export const getGptIdea = async (ideaId: string) => {
+export const getGptIdea = async (
+  client: SupabaseClient<Database>,
+  { ideaId }: { ideaId: number }
+) => {
   const { data, error } = await client
     .from("gpt_ideas_view")
     .select("*")
-    .eq("gpt_idea_id", Number(ideaId))
+    .eq("gpt_idea_id", ideaId)
     .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getClaimedIdeas = async (
+  client: SupabaseClient<Database>,
+  { claimedBy }: { claimedBy: string }
+) => {
+  const { data, error } = await client
+    .from("ideas")
+    .select("*")
+    .eq("claimed_by", claimedBy);
   if (error) throw new Error(error.message);
   return data;
 };

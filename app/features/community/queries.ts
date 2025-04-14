@@ -1,67 +1,29 @@
-// import db from "~/db";
-// import { posts, postUpvotes, topics } from "./schema";
-// import { asc, count, eq } from "drizzle-orm";
-// import { profiles } from "../users/schema";
-
-// export const getTopics = async () => {
-//   const allTopics = await db
-//     .select({
-//       name: topics.name,
-//       slug: topics.slug,
-//     })
-//     .from(topics);
-//   return allTopics;
-// };
-
-// export const getPosts = async () => {
-//   const allPosts = await db
-//     .select({
-//       id: posts.post_id,
-//       title: posts.title,
-//       createdAt: posts.created_at,
-//       category: topics.name,
-//       authorName: profiles.name,
-//       authorAvatarUrl: profiles.avatar,
-//       username: profiles.username,
-//       upvotes: count(postUpvotes.post_id),
-//     })
-//     .from(posts)
-//     .innerJoin(topics, eq(posts.topic_id, topics.topic_id))
-//     .innerJoin(profiles, eq(posts.profile_id, profiles.profile_id))
-//     .leftJoin(postUpvotes, eq(postUpvotes.post_id, posts.post_id))
-//     .groupBy(
-//       posts.post_id,
-//       profiles.name,
-//       profiles.username,
-//       profiles.avatar,
-//       topics.name
-//     )
-//     .orderBy(asc(posts.post_id));
-//   return allPosts;
-// };
-
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { DateTime } from "luxon";
-import client from "~/supa-client";
+import type { Database } from "~/supa-client";
 
-export const getTopics = async () => {
+export const getTopics = async (client: SupabaseClient<Database>) => {
   const { data, error } = await client.from("topics").select("name, slug");
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const getPosts = async ({
-  limit,
-  sorting,
-  period = "all",
-  keyword,
-  topic,
-}: {
-  limit: number;
-  sorting: "newest" | "popular";
-  period?: "all" | "today" | "week" | "month" | "year";
-  keyword?: string;
-  topic?: string;
-}) => {
+export const getPosts = async (
+  client: SupabaseClient<Database>,
+  {
+    limit,
+    sorting,
+    period = "all",
+    keyword,
+    topic,
+  }: {
+    limit: number;
+    sorting: "newest" | "popular";
+    period?: "all" | "today" | "week" | "month" | "year";
+    keyword?: string;
+    topic?: string;
+  }
+) => {
   const baseQuery = client
     .from("community_post_list_view")
     .select("*")
@@ -92,6 +54,42 @@ export const getPosts = async ({
     baseQuery.eq("topic_slug", topic);
   }
   const { data, error } = await baseQuery;
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getPostById = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: number }
+) => {
+  const { data, error } = await client
+    .from("community_post_detail_view")
+    .select("*")
+    .eq("post_id", postId)
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getReplies = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: number }
+) => {
+  const replyQuery = `
+    post_reply_id,
+    reply,
+    created_at,
+    user:profiles(name, username, avatar)
+  `;
+  const { data, error } = await client
+    .from("post_replies")
+    .select(
+      `
+      ${replyQuery},
+      post_replies(${replyQuery})
+    `
+    )
+    .eq("post_id", postId);
   if (error) throw new Error(error.message);
   return data;
 };

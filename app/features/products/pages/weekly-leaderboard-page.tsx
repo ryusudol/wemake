@@ -8,6 +8,7 @@ import { Button } from "~/common/components/ui/button";
 import ProductPagination from "~/common/components/product-pagination";
 import { getProductPagesByDate, getProductsByDateRange } from "../queries";
 import { POSTS_PER_PAGE } from "../constant";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = ({ params }) => {
   const date = DateTime.fromObject({
@@ -58,13 +59,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     );
   }
   const url = new URL(request.url);
-  const products = await getProductsByDateRange({
+  const { client, headers } = makeSSRClient(request);
+  const products = await getProductsByDateRange(client, {
     startDate: date.startOf("week"),
     endDate: date.endOf("week"),
     limit: POSTS_PER_PAGE,
     page: Number(url.searchParams.get("page")) || 1,
   });
-  const totalPages = await getProductPagesByDate({
+  const totalPages = await getProductPagesByDate(client, {
     startDate: date.startOf("week"),
     endDate: date.endOf("week"),
   });
@@ -114,7 +116,7 @@ export default function WeeklyLeaderboardPage({
             key={product.product_id}
             productId={product.product_id}
             productName={product.name}
-            description={product.description}
+            description={product.tagline}
             reviewCount={product.reviews}
             viewCount={product.views}
             upvoteCount={product.upvotes}

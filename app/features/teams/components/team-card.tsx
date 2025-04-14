@@ -14,9 +14,9 @@ import {
 } from "~/common/components/ui/avatar";
 
 interface TeamCardProps {
-  id: string;
+  id: number;
   leaderUsername: string;
-  leaderAvatarUrl: string;
+  leaderAvatarUrl: string | null;
   positions: string[];
   projectDescription: string;
 }
@@ -29,17 +29,17 @@ export function TeamCard({
   projectDescription,
 }: TeamCardProps) {
   return (
-    <Link to={`/teams/${id}`}>
-      <Card className="bg-transparent hover:bg-card/50 transition-colors">
+    <Link to={`/teams/${id}`} className="block">
+      <Card className="flex flex-col justify-between bg-transparent hover:bg-card/50 transition-colors h-full">
         <CardHeader className="flex flex-row items-center">
           <CardTitle className="text-base leading-loose">
             <Badge
               variant="secondary"
               className="inline-flex shadow-sm items-center text-base"
             >
-              <span>@{leaderUsername}</span>
+              <span>{leaderUsername}</span>
               <Avatar className="size-5">
-                <AvatarImage src={leaderAvatarUrl} />
+                {leaderAvatarUrl ? <AvatarImage src={leaderAvatarUrl} /> : null}
                 <AvatarFallback>
                   {leaderUsername[0].toUpperCase()}
                 </AvatarFallback>

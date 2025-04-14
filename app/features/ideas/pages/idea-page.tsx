@@ -4,6 +4,13 @@ import { DotIcon, EyeIcon, HeartIcon } from "lucide-react";
 import { Button } from "~/common/components/ui/button";
 import { getGptIdea } from "../queries";
 import { DateTime } from "luxon";
+import { z } from "zod";
+import { data } from "react-router";
+import { makeSSRClient } from "~/supa-client";
+
+const paramsSchema = z.object({
+  ideaId: z.coerce.number().gte(1),
+});
 
 export const meta: Route.MetaFunction = ({
   data: {
@@ -16,9 +23,16 @@ export const meta: Route.MetaFunction = ({
   ];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const { ideaId } = params;
-  const idea = await getGptIdea(ideaId);
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data(
+      { error_code: "invalid_idea_id", error_message: "Invalid ideaId" },
+      { status: 400 }
+    );
+  }
+  const { client, headers } = makeSSRClient(request);
+  const idea = await getGptIdea(client, { ideaId: parsedData.ideaId });
   return { idea };
 };
 

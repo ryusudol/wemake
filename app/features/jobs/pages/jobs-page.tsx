@@ -7,6 +7,7 @@ import { data, useSearchParams } from "react-router";
 import { cn } from "~/lib/utils";
 import { getJobs } from "../queries";
 import { z } from "zod";
+import { makeSSRClient } from "~/supa-client";
 
 const searchParamsSchema = z.object({
   type: z
@@ -39,7 +40,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       { status: 400 }
     );
   }
-  const jobs = await getJobs({
+  const { client, headers } = makeSSRClient(request);
+  const jobs = await getJobs(client, {
     limit: 20,
     type: parsedData.type,
     location: parsedData.location,

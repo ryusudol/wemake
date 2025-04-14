@@ -1,6 +1,6 @@
 {
-  "id": "d6f27f76-79d4-4a97-896c-0aedc5bd3e16",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "6c846421-958c-4a6b-a3d0-bf5b8d85a45f",
+  "prevId": "d6f27f76-79d4-4a97-896c-0aedc5bd3e16",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -988,7 +988,7 @@
           "name": "team_leader_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",

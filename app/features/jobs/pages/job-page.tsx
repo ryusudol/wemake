@@ -1,27 +1,40 @@
-import { Hero } from "~/common/components/hero";
 import type { Route } from "./+types/job-page";
 import { Button } from "~/common/components/ui/button";
 import { Badge } from "~/common/components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "~/common/components/ui/avatar";
 import { DotIcon } from "lucide-react";
+import { getJobById } from "../queries";
+import { z } from "zod";
+import { data } from "react-router";
+import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: "Job Details | wemake" }];
+const paramsSchema = z.object({
+  jobId: z.coerce.number().gte(1),
+});
+
+export const meta: Route.MetaFunction = ({ data }) => {
+  return [
+    {
+      title: `${data.job.position} @ ${data.job.company_name} | wemake`,
+    },
+  ];
 };
 
-export function loader({ params, request }: Route.LoaderArgs) {
-  return {};
-}
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data(
+      { error_code: "invalid_job_id", error_message: "Invalid jobID" },
+      { status: 400 }
+    );
+  }
+  const { client, headers } = makeSSRClient(request);
+  const job = await getJobById(client, { jobId: parsedData.jobId });
+  return { job };
+};
 
-export function action({ request }: Route.ActionArgs) {
-  return {};
-}
-
-export default function JobPage() {
+export default function JobPage({ loaderData }: Route.ComponentProps) {
+  const job = loaderData.job;
   return (
     <div>
       <div className="bg-gradient-to-tr from-primary/80 to-primary/10 h-60 w-full rounded-lg"></div>
@@ -30,67 +43,53 @@ export default function JobPage() {
           <div>
             <div className="size-40 bg-white rounded-full overflow-hidden relative left-10">
               <img
-                src="https://github.com/facebook.png"
+                src={job.company_logo_url}
                 alt="Logo img"
                 className="object-cover"
               />
             </div>
-            <h1 className="text-4xl font-bold">Software Engineer</h1>
-            <h4 className="text-lg text-muted-foreground">Meta Inc.</h4>
+            <h1 className="text-4xl font-bold">{job.position}</h1>
+            <h4 className="text-lg text-muted-foreground">
+              {job.company_name}
+            </h4>
           </div>
-          <div className="flex gap-2">
-            <Badge variant="secondary">Full-time</Badge>
-            <Badge variant="secondary">Remote</Badge>
+          <div className="flex gap-2 capitalize">
+            <Badge variant="secondary">{job.job_type}</Badge>
+            <Badge variant="secondary">{job.location_type}</Badge>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-2xl font-bold">Overview</h4>
-            <p className="text-lg">
-              This is a full-time remote position for a Software Engineer. We
-              are looking for a skilled and experienced Software Engineer to
-              join our team.
-            </p>
+            <p className="text-lg">{job.overview}</p>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-2xl font-bold">Responsibilities</h4>
             <ul className="text-lg list-disc list-inside">
-              {[
-                "Design and implement scalable and efficient software solutions",
-                "Collaborate with cross-functional teams to ensure timely delivery of projects",
-                "Optimize software performance and troubleshoot issues",
-              ].map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {job.responsibilities.split(",").map((responsibility, idx) => (
+                <li key={idx}>{responsibility}</li>
               ))}
             </ul>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-2xl font-bold">Qualifications</h4>
             <ul className="text-lg list-disc list-inside">
-              {[
-                "Bachelor's degree in Computer Science or related field",
-                "3+ years of experience in software development",
-                "Strong proficiency ion JavaScript, TypeScript, and React",
-              ].map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {job.qualifications.split(",").map((qualification, idx) => (
+                <li key={idx}>{qualification}</li>
               ))}
             </ul>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-2xl font-bold">Benefits</h4>
             <ul className="text-lg list-disc list-inside">
-              {[
-                "Competitive salary",
-                "Flexible working hours",
-                "Opportunity to work on cutting-edge projects",
-              ].map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {job.benefits.split(",").map((benefit, idx) => (
+                <li key={idx}>{benefit}</li>
               ))}
             </ul>
           </div>
           <div className="space-y-2.5">
             <h4 className="text-2xl font-bold">Skills</h4>
             <ul className="text-lg list-disc list-inside">
-              {["JavaScript", "TypeScript", "React"].map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {job.skills.split(",").map((skill, idx) => (
+                <li key={idx}>{skill}</li>
               ))}
             </ul>
           </div>
@@ -98,19 +97,23 @@ export default function JobPage() {
         <div className="col-span-2 space-y-5 mt-32 sticky top-20 p-6 border rounded-lg">
           <div className="flex flex-col">
             <span className="text-sm text-muted-foreground">Avg. Salary</span>
-            <span className="text-2xl font-medium">$100,000 - $120,000</span>
+            <span className="text-2xl font-medium">{job.salary_range}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-muted-foreground">Location</span>
-            <span className="text-2xl font-medium">Remote</span>
+            <span className="text-2xl font-medium capitalize">
+              {job.location_type}
+            </span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-muted-foreground">Type</span>
-            <span className="text-2xl font-medium">Full Time</span>
+            <span className="text-2xl font-medium capitalize">
+              {job.job_type}
+            </span>
           </div>
           <div className="flex">
             <span className="text-sm text-muted-foreground">
-              Posted 2 days ago
+              Posted {DateTime.fromISO(job.created_at).toRelative()}
             </span>
             <DotIcon className="size-4" />
             <span className="text-sm text-muted-foreground">395 views</span>

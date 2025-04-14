@@ -143,10 +143,16 @@ const menus = [
 
 export default function Navigation({
   isLoggedIn,
+  name,
+  username,
+  avatar,
   hasNotification,
   hasMessages,
 }: {
   isLoggedIn: boolean;
+  name?: string;
+  username?: string;
+  avatar?: string | null;
   hasNotification: boolean;
   hasMessages: boolean;
 }) {
@@ -227,14 +233,18 @@ export default function Navigation({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar>
-                <AvatarImage src="https://github.com/ryusudol.png" />
-                <AvatarFallback>R</AvatarFallback>
+                {avatar ? <AvatarImage src={avatar} /> : null}
+                <AvatarFallback>
+                  {username ? username[0].toUpperCase() : "A"}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel className="flex flex-col gap-1">
-                <span className="font-medium">Suhyeon Yu</span>
-                <span className="text-xs text-muted-foreground">@username</span>
+                <span className="font-medium">{name}</span>
+                <span className="text-xs text-muted-foreground">
+                  @{username}
+                </span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
